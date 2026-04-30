@@ -13,6 +13,7 @@ export interface IOrder extends Document {
   items: IOrderItem[];
   totalAmount: number;
   status: "pending" | "preparing" | "delivered" | "cancelled";
+  notes: string;
   createdAt: Date;
 }
 
@@ -37,6 +38,7 @@ const OrderSchema = new Schema<IOrder>(
       enum: ["pending", "preparing", "delivered", "cancelled"],
       default: "pending",
     },
+    notes: { type: String, default: "" },
   },
   { timestamps: true }
 );

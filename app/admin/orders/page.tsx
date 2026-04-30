@@ -82,6 +82,12 @@ export default function OrdersPage() {
                 {o.items.map((item, i) => (
                   <p key={i} className="text-sm text-muted-foreground">{item.quantity}× {item.name} — Rs. {(item.price * item.quantity).toLocaleString()}</p>
                 ))}
+                {(o as any).notes && (
+                  <div className="mt-2 p-2 bg-amber-500/10 rounded-md border border-amber-500/20">
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">Special Instructions:</p>
+                    <p className="text-sm italic">{(o as any).notes}</p>
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
                 {o.status === "pending" && <Button size="sm" variant="outline" onClick={() => updateStatus(o._id, "preparing")}>Start Preparing</Button>}

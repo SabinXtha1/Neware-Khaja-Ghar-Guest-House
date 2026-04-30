@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
     // Calculate order charges
     const orders = await Order.find({
       customer,
+      status: { $ne: "cancelled" },
       ...(bookingId ? { booking: bookingId } : {}),
     });
 

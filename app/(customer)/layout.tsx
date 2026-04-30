@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Hotel, LayoutDashboard, BedDouble, CalendarCheck, Receipt, ShoppingBag, LogOut } from "lucide-react";
+import { Hotel, LayoutDashboard, BedDouble, CalendarCheck, Receipt, ShoppingBag, LogOut, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/book-room", icon: BedDouble, label: "Book Room" },
+  { href: "/menu", icon: UtensilsCrossed, label: "Menu" },
   { href: "/my-bookings", icon: CalendarCheck, label: "My Bookings" },
   { href: "/my-orders", icon: ShoppingBag, label: "My Orders" },
   { href: "/my-bills", icon: Receipt, label: "My Bills" },

@@ -8,6 +8,7 @@ export interface IRoom extends Document {
   floor: number;
   amenities: string[];
   description: string;
+  imageUrl: string;
   createdAt: Date;
 }
 
@@ -20,6 +21,7 @@ const RoomSchema = new Schema<IRoom>(
     floor: { type: Number, required: true },
     amenities: [{ type: String }],
     description: { type: String, default: "" },
+    imageUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );

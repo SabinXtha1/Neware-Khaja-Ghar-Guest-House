@@ -59,7 +59,22 @@ export async function POST(request: NextRequest) {
 
     const checkIn = new Date(body.checkIn);
     const checkOut = new Date(body.checkOut);
+    
+    // Set hours to 0 to compare dates ignoring time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkInDate = new Date(checkIn);
+    checkInDate.setHours(0, 0, 0, 0);
+
+    if (checkInDate < today) {
+      return Response.json({ error: "Check-in date cannot be in the past" }, { status: 400 });
+    }
+
     const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+    if (nights < 1) {
+      return Response.json({ error: "Check-out must be at least 1 day after check-in" }, { status: 400 });
+    }
+
     body.totalAmount = nights * room.price;
 
     const booking = await Booking.create(body);

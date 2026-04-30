@@ -84,7 +84,17 @@ export default function BillDetailPage({ params }: { params: Promise<{ id: strin
             </tr></thead>
             <tbody className="divide-y divide-border/30">
               {bill.roomCharges > 0 && (
-                <tr><td className="py-3">Room Charges</td><td className="py-3 text-right">Rs. {bill.roomCharges.toLocaleString()}</td></tr>
+                <tr>
+                  <td className="py-3">
+                    <p className="font-medium">Room Charges</p>
+                    {bill.booking && bill.booking.room && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Rs. {bill.booking.room.price.toLocaleString()} × {Math.max(1, Math.ceil((new Date(bill.booking.checkOut).getTime() - new Date(bill.booking.checkIn).getTime()) / 86400000))} Night(s)
+                      </p>
+                    )}
+                  </td>
+                  <td className="py-3 text-right align-top">Rs. {bill.roomCharges.toLocaleString()}</td>
+                </tr>
               )}
               {bill.orders.map((order, i) => (
                 <tr key={i}>

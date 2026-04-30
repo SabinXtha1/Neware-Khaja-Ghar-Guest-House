@@ -40,10 +40,24 @@ export default function MyBillsPage() {
                 <StatusBadge status={b.status as "unpaid"} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                <div><p className="text-xs text-muted-foreground">Room</p><p className="font-medium">Rs. {b.roomCharges.toLocaleString()}</p></div>
-                <div><p className="text-xs text-muted-foreground">Orders</p><p className="font-medium">Rs. {b.orderCharges.toLocaleString()}</p></div>
-                <div><p className="text-xs text-muted-foreground">Tax</p><p className="font-medium">Rs. {b.tax.toLocaleString()}</p></div>
-                {b.discount > 0 && <div><p className="text-xs text-muted-foreground">Discount</p><p className="font-medium text-emerald-600">-Rs. {b.discount.toLocaleString()}</p></div>}
+                <div className="p-3 bg-muted/30 rounded-xl">
+                  <p className="text-xs text-muted-foreground mb-1">Room Charges</p>
+                  <p className="font-bold">Rs. {b.roomCharges.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-muted/30 rounded-xl">
+                  <p className="text-xs text-muted-foreground mb-1">Food Orders</p>
+                  <p className="font-bold">Rs. {b.orderCharges.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-muted/30 rounded-xl">
+                  <p className="text-xs text-muted-foreground mb-1">Tax (13%)</p>
+                  <p className="font-bold">Rs. {b.tax.toLocaleString()}</p>
+                </div>
+                {b.discount > 0 && (
+                  <div className="p-3 bg-emerald-500/10 rounded-xl">
+                    <p className="text-xs text-emerald-700 dark:text-emerald-400 mb-1">Discount</p>
+                    <p className="font-bold text-emerald-700 dark:text-emerald-400">-Rs. {b.discount.toLocaleString()}</p>
+                  </div>
+                )}
               </div>
               <div className="pt-3 border-t border-border/50 flex justify-between">
                 <span className="font-medium">Total</span>

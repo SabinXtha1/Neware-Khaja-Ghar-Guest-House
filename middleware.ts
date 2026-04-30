@@ -3,7 +3,7 @@ import { decrypt } from "@/lib/session";
 
 const publicPaths = ["/", "/login", "/register", "/api/auth/login", "/api/auth/register", "/api/seed"];
 const adminPaths = ["/admin"];
-const customerPaths = ["/dashboard", "/my-bookings", "/my-bills", "/my-orders", "/book-room"];
+const customerPaths = ["/dashboard", "/menu", "/my-bookings", "/my-bills", "/my-orders", "/book-room"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

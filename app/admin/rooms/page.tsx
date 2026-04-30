@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 interface Room {
   _id: string; roomNumber: string; type: string; price: number;
-  status: string; floor: number; amenities: string[]; description: string;
+  status: string; floor: number; amenities: string[]; description: string; imageUrl: string;
 }
 
 export default function RoomsPage() {
@@ -21,7 +21,7 @@ export default function RoomsPage() {
   const [editing, setEditing] = useState<Room | null>(null);
   const [form, setForm] = useState({
     roomNumber: "", type: "single", price: 0, floor: 1,
-    amenities: "", description: "", status: "available",
+    amenities: "", description: "", imageUrl: "", status: "available",
   });
 
   const fetchRooms = () => {
@@ -31,7 +31,7 @@ export default function RoomsPage() {
   useEffect(() => { fetchRooms(); }, []);
 
   const resetForm = () => {
-    setForm({ roomNumber: "", type: "single", price: 0, floor: 1, amenities: "", description: "", status: "available" });
+    setForm({ roomNumber: "", type: "single", price: 0, floor: 1, amenities: "", description: "", imageUrl: "", status: "available" });
     setEditing(null);
   };
 
@@ -40,7 +40,7 @@ export default function RoomsPage() {
     setForm({
       roomNumber: room.roomNumber, type: room.type, price: room.price,
       floor: room.floor, amenities: room.amenities.join(", "),
-      description: room.description, status: room.status,
+      description: room.description, imageUrl: (room as any).imageUrl || "", status: room.status,
     });
     setDialogOpen(true);
   };
@@ -83,8 +83,8 @@ export default function RoomsPage() {
           <p className="text-muted-foreground mt-1">Manage your guest house rooms</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
-          <DialogTrigger asChild>
-            <Button className="gradient-primary text-white border-0"><Plus className="h-4 w-4 mr-2" /> Add Room</Button>
+          <DialogTrigger render={<Button className="gradient-primary text-white border-0" />}>
+            <Plus className="h-4 w-4 mr-2" /> Add Room
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader><DialogTitle>{editing ? "Edit Room" : "Add Room"}</DialogTitle></DialogHeader>
@@ -134,6 +134,10 @@ export default function RoomsPage() {
                 <Label>Description</Label>
                 <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
+              <div className="space-y-2">
+                <Label>Image URL</Label>
+                <Input value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://..." />
+              </div>
               <Button type="submit" className="w-full gradient-primary text-white border-0">{editing ? "Update" : "Create"}</Button>
             </form>
           </DialogContent>
@@ -153,7 +157,12 @@ export default function RoomsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {rooms.map((room) => (
-            <div key={room._id} className="rounded-2xl border border-border/50 bg-card p-5 space-y-4 hover:shadow-lg hover:shadow-primary/5 transition-all">
+            <div key={room._id} className="rounded-2xl border border-border/50 bg-card p-5 space-y-4 hover:shadow-lg hover:shadow-primary/5 transition-all overflow-hidden flex flex-col">
+              {room.imageUrl && (
+                <div className="h-32 -mx-5 -mt-5 mb-4 relative overflow-hidden bg-muted">
+                  <img src={room.imageUrl} alt={`Room ${room.roomNumber}`} className="object-cover w-full h-full" />
+                </div>
+              )}
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">

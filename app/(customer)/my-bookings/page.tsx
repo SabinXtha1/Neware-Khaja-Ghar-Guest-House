@@ -50,7 +50,12 @@ export default function MyBookingsPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold">Rs. {b.totalAmount?.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Booked {format(new Date(b.createdAt), "MMM dd, yyyy")}</p>
+                  {b.room?.price && (
+                    <p className="text-[10px] uppercase font-semibold text-muted-foreground mt-1">
+                      Rs. {b.room.price.toLocaleString()} × {Math.max(1, Math.ceil((new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) / 86400000))} Night(s)
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">Booked {format(new Date(b.createdAt), "MMM dd, yyyy")}</p>
                 </div>
               </div>
             </div>

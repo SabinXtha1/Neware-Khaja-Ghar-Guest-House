@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Hotel, LayoutDashboard, BedDouble, CalendarCheck, Users, ShoppingBag, Receipt, LogOut, Menu, X } from "lucide-react";
+import { Hotel, LayoutDashboard, BedDouble, CalendarCheck, Users, ShoppingBag, Receipt, LogOut, Menu, X, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/rooms", icon: BedDouble, label: "Rooms" },
   { href: "/admin/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/admin/customers", icon: Users, label: "Customers" },
+  { href: "/admin/food-items", icon: UtensilsCrossed, label: "Food Menu" },
   { href: "/admin/orders", icon: ShoppingBag, label: "Orders" },
   { href: "/admin/bills", icon: Receipt, label: "Bills" },
 ];

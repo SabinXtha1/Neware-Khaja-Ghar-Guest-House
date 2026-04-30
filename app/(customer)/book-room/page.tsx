@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface Room { _id: string; roomNumber: string; type: string; price: number; status: string; floor: number; amenities: string[]; description: string }
+interface Room { _id: string; roomNumber: string; type: string; price: number; status: string; floor: number; amenities: string[]; description: string; imageUrl: string; }
 
 const amenityIcons: Record<string, typeof Wifi> = { WiFi: Wifi, TV: Tv, AC: Wind, Fan: Wind, "Hot Water": Droplets, "Mini Bar": Wine, "Mountain View": Mountain, Jacuzzi: Bath };
 
@@ -28,6 +28,8 @@ export default function BookRoomPage() {
   const nights = form.checkIn && form.checkOut
     ? Math.max(1, Math.ceil((new Date(form.checkOut).getTime() - new Date(form.checkIn).getTime()) / 86400000))
     : 0;
+
+  const today = new Date().toISOString().split("T")[0];
 
   const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,33 +75,57 @@ export default function BookRoomPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rooms.map((room) => (
-            <div key={room._id} className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br ${typeColors[room.type] || ""} p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}>
-              <div className="absolute top-4 right-4">
-                <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium capitalize">{room.type}</span>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold">Room {room.roomNumber}</h3>
-                  <p className="text-sm text-muted-foreground">Floor {room.floor}</p>
-                </div>
-                {room.description && <p className="text-sm text-muted-foreground">{room.description}</p>}
-                <div className="flex flex-wrap gap-2">
-                  {room.amenities.map((a, i) => {
-                    const Icon = amenityIcons[a];
-                    return (
-                      <div key={i} className="flex items-center gap-1 text-xs bg-background/60 px-2 py-1 rounded-md">
-                        {Icon && <Icon className="h-3 w-3" />}
-                        {a}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex items-end justify-between pt-2">
-                  <div>
-                    <p className="text-2xl font-bold">Rs. {room.price.toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground">per night</p>
+            <div key={room._id} className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
+              {room.imageUrl ? (
+                <div className="h-48 w-full relative overflow-hidden bg-muted">
+                  <img src={room.imageUrl} alt={`Room ${room.roomNumber}`} className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute top-4 right-4">
+                    <span className="text-xs bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full font-medium capitalize">{room.type}</span>
                   </div>
-                  <Button onClick={() => setSelectedRoom(room)} className="gradient-primary text-white border-0">Book Now</Button>
+                </div>
+              ) : (
+                <div className={`h-40 w-full bg-gradient-to-br ${typeColors[room.type] || ""} flex items-center justify-center relative`}>
+                  <BedDouble className="h-10 w-10 opacity-20" />
+                  <div className="absolute top-4 right-4">
+                    <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium capitalize">{room.type}</span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="text-xl font-bold">Room {room.roomNumber}</h3>
+                      <p className="text-sm text-muted-foreground">Floor {room.floor}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-primary">Rs. {room.price.toLocaleString()}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">per night</p>
+                    </div>
+                  </div>
+                  {room.description && <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{room.description}</p>}
+                  
+                  <div className="flex flex-wrap gap-1.5 mt-auto">
+                    {room.amenities.slice(0, 4).map((a, i) => {
+                      const Icon = amenityIcons[a];
+                      return (
+                        <div key={i} className="flex items-center gap-1 text-[11px] font-medium bg-muted px-2 py-1 rounded-md">
+                          {Icon && <Icon className="h-3 w-3" />}
+                          {a}
+                        </div>
+                      );
+                    })}
+                    {room.amenities.length > 4 && (
+                      <div className="flex items-center gap-1 text-[11px] font-medium bg-muted px-2 py-1 rounded-md">
+                        +{room.amenities.length - 4} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="pt-4 border-t border-border/50">
+                  <Button onClick={() => setSelectedRoom(room)} className="w-full gradient-primary text-white border-0">Book Room</Button>
                 </div>
               </div>
             </div>
@@ -118,11 +144,11 @@ export default function BookRoomPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Check In</Label>
-                <Input type="date" value={form.checkIn} onChange={(e) => setForm({ ...form, checkIn: e.target.value })} required />
+                <Input type="date" min={today} value={form.checkIn} onChange={(e) => setForm({ ...form, checkIn: e.target.value })} required />
               </div>
               <div className="space-y-2">
                 <Label>Check Out</Label>
-                <Input type="date" value={form.checkOut} onChange={(e) => setForm({ ...form, checkOut: e.target.value })} required />
+                <Input type="date" min={form.checkIn || today} value={form.checkOut} onChange={(e) => setForm({ ...form, checkOut: e.target.value })} required />
               </div>
             </div>
             <div className="space-y-2">
@@ -134,12 +160,22 @@ export default function BookRoomPage() {
               <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Any special requests..." />
             </div>
             {nights > 0 && selectedRoom && (
-              <div className="p-4 bg-primary/5 rounded-xl">
-                <p className="text-sm text-muted-foreground">{nights} night(s) × Rs. {selectedRoom.price.toLocaleString()}</p>
-                <p className="text-xl font-bold mt-1">Total: Rs. {(nights * selectedRoom.price).toLocaleString()}</p>
+              <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm text-muted-foreground">Rate per night</span>
+                  <span className="text-sm font-medium">Rs. {selectedRoom.price.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-muted-foreground">Duration</span>
+                  <span className="text-sm font-medium">{nights} night(s)</span>
+                </div>
+                <div className="pt-2 border-t border-primary/10 flex justify-between items-end">
+                  <span className="font-bold">Total Estimated Cost</span>
+                  <span className="text-xl font-bold text-primary">Rs. {(nights * selectedRoom.price).toLocaleString()}</span>
+                </div>
               </div>
             )}
-            <Button type="submit" className="w-full gradient-primary text-white border-0 h-11" disabled={booking}>
+            <Button type="submit" className="w-full gradient-primary text-white border-0 h-11" disabled={booking || nights < 1}>
               {booking ? "Booking..." : "Confirm Booking"}
             </Button>
           </form>

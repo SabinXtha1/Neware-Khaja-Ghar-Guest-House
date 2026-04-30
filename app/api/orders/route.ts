@@ -43,7 +43,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     if (session.role === "customer") {
+      // Find active booking for customer
+      const Booking = (await import("@/lib/models/Booking")).default;
+      const activeBooking = await Booking.findOne({
+        customer: session.userId,
+        status: "checked-in"
+      });
+
+      if (!activeBooking) {
+        return Response.json({ error: "You must be checked into a room to order room service" }, { status: 403 });
+      }
+
       body.customer = session.userId;
+      body.booking = activeBooking._id;
+      body.room = activeBooking.room;
     }
 
     // Calculate total
