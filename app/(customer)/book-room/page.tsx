@@ -91,7 +91,7 @@ export default function BookRoomPage() {
                   </div>
                 </div>
               )}
-              
+
               <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-2">
@@ -105,7 +105,7 @@ export default function BookRoomPage() {
                     </div>
                   </div>
                   {room.description && <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{room.description}</p>}
-                  
+
                   <div className="flex flex-wrap gap-1.5 mt-auto">
                     {room.amenities.slice(0, 4).map((a, i) => {
                       const Icon = amenityIcons[a];
@@ -123,7 +123,7 @@ export default function BookRoomPage() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="pt-4 border-t border-border/50">
                   <Button onClick={() => setSelectedRoom(room)} className="w-full gradient-primary text-white border-0">Book Room</Button>
                 </div>

@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     const checkIn = new Date(body.checkIn);
     const checkOut = new Date(body.checkOut);
-    
+
     // Set hours to 0 to compare dates ignoring time
     const today = new Date();
     today.setHours(0, 0, 0, 0);

@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, CalendarCheck } from "lucide-react";
+import { Plus, CalendarCheck, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Booking {
   _id: string;
@@ -20,13 +23,49 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [rooms, setRooms] = useState<Array<{_id: string; roomNumber: string; type: string}>>([]);
+  const [form, setForm] = useState({ checkIn: "", checkOut: "", guests: 1, room: "", status: "" });
 
   const fetchBookings = () => {
     const url = filter ? `/api/bookings?status=${filter}` : "/api/bookings";
     fetch(url).then((r) => r.json()).then(setBookings).finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchBookings(); }, [filter]);
+  useEffect(() => { 
+    fetchBookings(); 
+    fetch("/api/rooms").then(r => r.json()).then(setRooms).catch(() => {});
+  }, [filter]);
+
+  const openEdit = (booking: Booking) => {
+    setEditingBooking(booking);
+    setForm({
+      checkIn: new Date(booking.checkIn).toISOString().split('T')[0],
+      checkOut: new Date(booking.checkOut).toISOString().split('T')[0],
+      guests: booking.guests,
+      room: booking.room?._id || (booking.room as any) || "",
+      status: booking.status,
+    });
+    setDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBooking) return;
+    const res = await fetch(`/api/bookings/${editingBooking._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    if (res.ok) {
+      toast.success("Booking updated");
+      setDialogOpen(false);
+      fetchBookings();
+    } else {
+      toast.error("Update failed");
+    }
+  };
 
   const updateStatus = async (id: string, status: string) => {
     const res = await fetch(`/api/bookings/${id}`, {
@@ -101,6 +140,7 @@ export default function BookingsPage() {
                         {(b.status === "confirmed" || b.status === "checked-in") && (
                           <Button size="sm" variant="outline" className="text-destructive" onClick={() => updateStatus(b._id, "cancelled")}>Cancel</Button>
                         )}
+                        <Button size="sm" variant="ghost" onClick={() => openEdit(b)}><Pencil className="h-4 w-4" /></Button>
                       </div>
                     </td>
                   </tr>
@@ -110,6 +150,48 @@ export default function BookingsPage() {
           </div>
         </div>
       )}
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Booking</DialogTitle></DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Check In</Label>
+                <Input type="date" value={form.checkIn} onChange={e => setForm({...form, checkIn: e.target.value})} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Check Out</Label>
+                <Input type="date" value={form.checkOut} onChange={e => setForm({...form, checkOut: e.target.value})} required />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Room</Label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" 
+                value={form.room} onChange={e => setForm({...form, room: e.target.value})} required>
+                <option value="">Select Room</option>
+                {rooms.map(r => (
+                  <option key={r._id} value={r._id}>Room {r.roomNumber} ({r.type})</option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Guests</Label>
+                <Input type="number" min="1" value={form.guests} onChange={e => setForm({...form, guests: Number(e.target.value)})} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" 
+                  value={form.status} onChange={e => setForm({...form, status: e.target.value})} required>
+                  {statuses.filter(s => s).map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+            <Button type="submit" className="w-full gradient-primary text-white border-0">Save Changes</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
