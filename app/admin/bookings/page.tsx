@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 interface Booking {
   _id: string;
   customer: { _id: string; name: string; email: string };
-  room: { roomNumber: string; type: string; price: number };
+  room: { _id?: string; roomNumber: string; type: string; price: number };
   checkIn: string; checkOut: string; guests: number;
   status: string; totalAmount: number; createdAt: string;
 }
